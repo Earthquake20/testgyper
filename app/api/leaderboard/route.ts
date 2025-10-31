@@ -1,33 +1,56 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
+import { Redis } from '@upstash/redis'
 
-export async function GET() {
-  try {
-    if (!process.env.REDIS_URL || !process.env.REDIS_TOKEN) {
-      return NextResponse.json([]);
-    }
+const redis = Redis.fromEnv()
 
-    const { Redis } = await import('@upstash/redis');
-    const redis = new Redis({
-      url: process.env.REDIS_URL,
-      token: process.env.REDIS_TOKEN,
-    });
-
-    // v1-compatible: use object form and cast to any to appease TS defs in 1.x
-    const flat = (await (redis as any).zrange('leaderboard', {
-      start: 0,
-      stop: 9,
-      rev: true,
-      withScores: true,
-    })) as (string | number)[];
-
-    const out: { username: string; score: number }[] = [];
-    for (let i = 0; i < flat.length; i += 2) {
-      out.push({ username: String(flat[i]), score: Number(flat[i + 1]) });
-    }
-
-    return NextResponse.json(out);
-  } catch (e) {
-    console.error('leaderboard error', e);
-    return NextResponse.json([]);
+function normalize(raw: any): { member: string; score: number }[] {
+  if (!raw) return []
+  if (Array.isArray(raw) && raw.length && typeof raw[0] === 'string') {
+    const out: { member: string; score: number }[] = []
+    for (let i = 0; i < raw.length; i += 2) out.push({ member: String(raw[i]), score: Number(raw[i + 1]) })
+    return out
   }
+  if (Array.isArray(raw) && raw.length && typeof raw[0] === 'object') {
+    return raw.map((r: any) => ({ member: String(r.member), score: Number(r.score) }))
+  }
+  return []
+}
+
+export async function GET(req: Request) {
+  const url = new URL(req.url)
+  const game = url.searchParams.get('game') || ''
+  const op = url.searchParams.get('op') || 'top'
+  if (!game) return NextResponse.json({ error: 'bad_query' }, { status: 400 })
+  const key = `lb:${game}`
+
+  if (op === 'count') {
+    const count = await redis.zcard(key)
+    return NextResponse.json({ game, count })
+  }
+
+  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 25), 1), 100)
+
+  // newer SDK → use zrange with reverse: true
+  const raw = await redis.zrange(key, 0, limit - 1, {
+    withScores: true,
+    rev: true,
+  })
+
+  return NextResponse.json({ game, limit, rows: normalize(raw) })
+}
+
+export async function POST(req: Request) {
+  let body: any
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'bad_json' }, { status: 400 }) }
+  const { game, member, score } = body || {}
+  if (!game || !member || typeof score !== 'number') {
+    return NextResponse.json({ error: 'bad_body' }, { status: 400 })
+  }
+  const key = `lb:${game}`
+  const prev = await redis.zscore(key, member)
+  const next = prev != null ? Math.max(Number(prev), score) : score
+  if (prev == null || next !== Number(prev)) {
+    await redis.zadd(key, { score: next, member })
+  }
+  return NextResponse.json({ ok: true, game, member, score: next })
 }
