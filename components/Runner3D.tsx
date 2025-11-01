@@ -7,6 +7,8 @@ import { Howl, Howler } from 'howler';
 import { useAccount, useConnect, useDisconnect, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { sdk } from '@farcaster/miniapp-sdk'
 import { parseEther } from 'viem';
+import Leaderboard from './Leaderboard'
+
 
 // STEP 1. helper to mount a full bleed background video behind the WebGL canvas
 function mountBackgroundVideo(mount: HTMLElement) {
@@ -367,28 +369,11 @@ const sfxRef = useRef<{
 
   // Share replay toggle
   const [canShare, setCanShare] = useState(false);
-const [showBoard, setShowBoard] = useState(false);
 // Start-screen music toggle (neon page)
 const [musicOn, setMusicOn] = useState(true);
 
-const [board, setBoard] = useState<{score:number; at:number}[]>([]);
 
-function loadBoard() {
-  try {
-    const raw = localStorage.getItem('hyper-board');
-    const arr = raw ? JSON.parse(raw) as {score:number; at:number}[] : [];
-    setBoard(arr.sort((a,b)=>b.score-a.score).slice(0, 20));
-  } catch {}
-}
-function saveScoreLocal(score:number) {
-  try {
-    const raw = localStorage.getItem('hyper-board');
-    const arr = raw ? JSON.parse(raw) as {score:number; at:number}[] : [];
-    arr.push({ score, at: Date.now() });
-    localStorage.setItem('hyper-board', JSON.stringify(arr));
-  } catch {}
-}
-useEffect(() => { loadBoard(); }, []);
+const [showOnlineLB, setShowOnlineLB] = useState(false)
 
 // Preload and mount the background video once (so Start is instant)
 useEffect(() => {
@@ -1984,8 +1969,6 @@ stopMusic();
 setDead(true); setRunning(false);
 setBest(b => Math.max(b, localScore));
 setScore(localScore);
-saveScoreLocal(localScore);
-loadBoard();
     }
   } catch (err) {
     console.error('Frame error:', err);
@@ -2243,7 +2226,6 @@ const handleShare = async () => {
         <button onClick={handleRetry} style={goBtnPrimary} disabled={isPaying}>
           {isPaying ? 'Processing…' : 'Replay'}
         </button>
-        <button onClick={() => setShowBoard(true)} style={goBtnGhost}>Leaderboard</button>
         <button
           onClick={handleShare}
           style={{ ...goBtnGhost, opacity: canShare ? 1 : 0.6, cursor: canShare ? 'pointer' : 'not-allowed' }}
@@ -2306,6 +2288,10 @@ const handleShare = async () => {
               Upgrades — Jump: {upg.jump} • Magnet: {upg.magnet} • Slide: {upg.slide} • Streak: {streak}d
             </div>
 
+
+
+
+
 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
   <button
     onClick={() => { setShowSettings(false); if (running) setPaused(false); }}
@@ -2319,33 +2305,6 @@ const handleShare = async () => {
           </div>
         </div>
       )}
-      {showBoard && (
-  <div style={drawerOverlay} onClick={() => setShowBoard(false)}>
-    <div style={drawer} onClick={e => e.stopPropagation()}>
-      <h3 style={{ marginTop: 0 }}>Leaderboard (Local)</h3>
-      <div style={{ maxHeight: 260, overflow: 'auto', paddingRight: 6 }}>
-        {board.length === 0 ? (
-          <div style={{ opacity: 0.7 }}>No scores yet — play a run!</div>
-        ) : (
-          <ol style={{ margin: 0, paddingLeft: 18 }}>
-            {board.map((r, i) => (
-              <li key={i} style={{ margin: '6px 0', display: 'flex', justifyContent: 'space-between' }}>
-                <span>Score {r.score}</span>
-                <span style={{ opacity: 0.7, fontSize: 12 }}>
-                  {new Date(r.at).toLocaleString()}
-                </span>
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-        <button onClick={() => setShowBoard(false)} style={btn}>Close</button>
-        <button onClick={() => { localStorage.removeItem('hyper-board'); loadBoard(); }} style={btn}>Clear</button>
-      </div>
-    </div>
-  </div>
-)}
     </div>
   );
 }
@@ -2530,7 +2489,7 @@ function StartScreen({
 const { address, isConnected, status } = useAccount();
 const { connect, connectors, isPending } = useConnect();
 const { disconnect } = useDisconnect();
-
+const [showOnlineLB, setShowOnlineLB] = useState(false)
 const fcConnector = connectors.find(c => c.id.includes('farcaster')) ?? connectors[0];
 
 
@@ -2681,6 +2640,24 @@ const short = (a?: string) =>
   >
     MUSIC {musicOn ? 'ON' : 'OFF'}
   </button>
+
+<button
+  onClick={() => setShowOnlineLB(true)}
+  style={{
+    padding: '12px 28px',
+    borderRadius: 14,
+    fontWeight: 900,
+    fontSize: 14,
+    border: '1px solid rgba(255,255,255,0.18)',
+    background: 'rgba(18,18,26,0.55)',
+    color: '#fff',
+    boxShadow: '0 6px 20px rgba(0,0,0,0.35)',
+    cursor: 'pointer',
+    marginTop: 8,
+  }}
+>
+  LEADERBOARD
+</button>
 </div>
 </div>
 
@@ -2703,6 +2680,30 @@ const short = (a?: string) =>
     <IdBadge />
           </div>
         </div>
+        {showOnlineLB && (
+  <div style={drawerOverlay} onClick={() => setShowOnlineLB(false)}>
+    <div style={drawer} onClick={e => e.stopPropagation()}>
+      <h3 style={{ marginTop: 0, marginBottom: 10 }}>Leaderboard</h3>
+      <Leaderboard />
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+        <button
+          onClick={() => setShowOnlineLB(false)}
+          style={{
+            padding: '8px 16px',
+            borderRadius: 10,
+            background: '#222',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.15)',
+            cursor: 'pointer',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
   );
 }
