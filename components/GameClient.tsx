@@ -15,9 +15,32 @@ type RunnerAPI = {
   getStats?: () => { score: number; best: number; speed: number; lives?: number; world?: string };
 };
 
+function getPlayerId() {
+  const k = 'hyperrun:player'
+  let id = localStorage.getItem(k)
+  if (!id) {
+    id = 'player_' + Math.random().toString(36).slice(2, 8)
+    localStorage.setItem(k, id)
+  }
+  return id
+}
+
+async function submitScoreToLB(score: number) {
+  try {
+    await fetch('/api/leaderboard', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ game: 'hyperrun', member: getPlayerId(), score })
+    })
+  } catch (err) {
+    console.error('leaderboard submit failed', err)
+  }
+}
+
+
 export default function GameClient() {
   const apiRef = useRef<RunnerAPI | null>(null);
-
+  const scoreRef = useRef(0)
   const [score, setScore] = useState(0);
   const [best, setBest] = useState(0);
   const [speed, setSpeed] = useState(0);
@@ -32,6 +55,7 @@ export default function GameClient() {
   // receive lightweight ticks from Runner3D if it emits them
   const handleTick = useCallback((s: { score: number; best: number; speed: number; lives?: number; world?: string }) => {
     setScore(s.score);
+    scoreRef.current = s.score
     setBest(s.best);
     setSpeed(s.speed);
     if (typeof s.lives === 'number') setLives(s.lives);
@@ -51,6 +75,7 @@ export default function GameClient() {
     } else if (state === 'die') {
       setIsRunning(false);
       setIsDead(true);
+      submitScoreToLB(scoreRef.current)
     } else if (state === 'restart') {
       setIsDead(false);
       setIsRunning(true);
