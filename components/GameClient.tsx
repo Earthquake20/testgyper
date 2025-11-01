@@ -131,7 +131,7 @@ return (
   id="game-frame"
   style={{
     position: 'relative',
-    width: '100vw',
+    width: '100svw',
     height: '100svh',
     margin: 0,
     overflow: 'hidden',

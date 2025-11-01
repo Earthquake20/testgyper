@@ -19,7 +19,7 @@ export default function Page() {
 <main
   style={{
     height: '100svh',
-    width: '100vw',
+    width: '100svw',
     margin: 0,
     padding: 0,
     overflow: 'hidden',

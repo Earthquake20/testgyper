@@ -2155,16 +2155,17 @@ const handleShare = async () => {
 <div
   ref={containerRef}
   style={{
-    position: 'fixed',
+    position: 'absolute', // ← was fixed
     inset: 0,
     overflow: 'hidden',
     display: 'grid',
     placeItems: 'center',
     padding: 0,
     margin: 0,
-    background: '#000', // add this
+    background: '#000',
   }}
 >
+
 
 
 
