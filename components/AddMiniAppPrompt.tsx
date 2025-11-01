@@ -1,3 +1,4 @@
+// components/AddMiniAppPrompt.tsx
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -11,15 +12,17 @@ export default function AddMiniAppPrompt() {
 
   useEffect(() => {
     let ignore = false;
-    (async () => {
+
+    async function init() {
       try {
-const added = localStorage.getItem(LS_KEY) === 'yes';
-const force = new URLSearchParams(location.search).has('addma');
-if (!ignore && (force || !added)) setOpen(true);
+        const inMini = (await sdk.isInMiniApp()) === true;
+        const added = localStorage.getItem(LS_KEY) === 'yes';
+        if (!ignore && inMini && !added) setOpen(true);
       } catch {
         /* no-op */
       }
-    })();
+    }
+    init();
     return () => {
       ignore = true;
     };
@@ -29,40 +32,111 @@ if (!ignore && (force || !added)) setOpen(true);
     try {
       setBusy(true);
       await sdk.actions.addMiniApp();
+      // mark as added only after confirm flow
       localStorage.setItem(LS_KEY, 'yes');
       setOpen(false);
     } catch {
-      // no flag so it can show next launch
+      // user dismissed native prompt or host error
+      // do not set flag so it will show next launch
     } finally {
       setBusy(false);
     }
   }, []);
 
   const handleCancel = useCallback(() => {
+    // just close for now, no flag, so it will appear next launch
     setOpen(false);
   }, []);
 
   if (!open) return null;
 
-return (
-  <div
-    className="addma-overlay"
-    data-game-layer
-    aria-modal="true"
-    role="dialog"
-    style={{ position: 'absolute', inset: 0, zIndex: 100, overflow: 'hidden' }}
-  >
-    <div className="addma-panel" style={{ maxHeight: '84%', overflow: 'hidden' }}>
-        <div className="addma-head">
-          <div className="addma-logo">HR</div>
-          <div className="addma-title">Add Mini App. Hyper Run</div>
+  return (
+    <div
+      aria-modal="true"
+      role="dialog"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.6)',
+        display: 'grid',
+        placeItems: 'center',
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          width: 360,
+          maxWidth: '92vw',
+          background: '#111218',
+          borderRadius: 16,
+          padding: 20,
+          color: 'white',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              background: 'linear-gradient(145deg,#00e0ff,#0080ff)',
+              display: 'grid',
+              placeItems: 'center',
+              fontWeight: 800,
+            }}
+          >
+            HR
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 700 }}>Add Mini App. Hyper Run</div>
         </div>
 
-        <div className="addma-note">Add to Farcaster for quick access and notifications</div>
+        <div
+          style={{
+            background: '#1a1b22',
+            borderRadius: 10,
+            padding: 12,
+            fontSize: 14,
+            opacity: 0.9,
+            marginBottom: 16,
+          }}
+        >
+          Add to Farcaster for quick access and notifications
+        </div>
 
-        <div className="addma-actions">
-          <button className="addma-btn addma-cancel" onClick={handleCancel} disabled={busy}>Cancel</button>
-          <button className="addma-btn addma-ok" onClick={handleConfirm} disabled={busy}>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}>
+          <button
+            onClick={handleCancel}
+            disabled={busy}
+            style={{
+              flex: 1,
+              height: 44,
+              borderRadius: 10,
+              background: '#262833',
+              color: 'white',
+              border: '1px solid rgba(255,255,255,0.06)',
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={handleConfirm}
+            disabled={busy}
+            style={{
+              flex: 1,
+              height: 44,
+              borderRadius: 10,
+              background: 'linear-gradient(90deg,#6b4dff,#8a6bff)',
+              color: 'white',
+              fontWeight: 700,
+              border: 'none',
+              cursor: 'pointer',
+              opacity: busy ? 0.8 : 1,
+            }}
+          >
             {busy ? 'Working…' : 'Confirm'}
           </button>
         </div>
