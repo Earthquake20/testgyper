@@ -2159,6 +2159,7 @@ const handleShare = async () => {
     placeItems: 'center',
     padding: 0,
     margin: 0,
+    background: '#000', // add this
   }}
 >
 
@@ -2172,7 +2173,7 @@ style={{
   width: size.w,
   height: size.h,
   borderRadius: 16,
-  border: '1px solid #222',
+  // border: '1px solid #222', // remove this
   background: `linear-gradient(${colors.bgTop}, ${colors.bgBot})`,
   overflow: 'hidden',
   ...pausedBlur,
