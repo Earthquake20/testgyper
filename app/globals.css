@@ -30,6 +30,12 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  #screen-game, .game-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
   .game-wrap {
   position: relative;
   width: 100%;

@@ -54,14 +54,16 @@ export default function AddMiniAppPrompt() {
     <div
       aria-modal="true"
       role="dialog"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.6)',
-        display: 'grid',
-        placeItems: 'center',
-        zIndex: 9999,
-      }}
+style={{
+  position: 'absolute',      // was fixed
+  inset: 0,                  // fill only the game frame
+  background: 'rgba(0,0,0,0.6)',
+  display: 'grid',
+  placeItems: 'center',
+  zIndex: 40,                // high inside frame, not global
+  borderRadius: 16,          // match frame rounding if any
+}}
+
     >
       <div
         style={{
