@@ -267,7 +267,9 @@ const bgVideoRef = useRef<HTMLVideoElement | null>(null);
 const mountRef = useRef<HTMLDivElement | null>(null);
 const cleanupRef = useRef<(() => void) | null>(null);
 const rafRef = useRef<RAF>(null);
-const startedRef = useRef(false); // ← prevents double start
+const startedRef = useRef(false);
+const submitOnceRef = useRef(false);
+
 
 useEffect(() => {
   (async () => {
@@ -1971,6 +1973,8 @@ if (localScore >= nextBossAtScore) {
   setScore(localScore);
 
     // submit to leaderboard (no await here)
+  if (!submitOnceRef.current) {
+    submitOnceRef.current = true;
     const member = (address ?? 'guest').toLowerCase();
     fetch('/api/leaderboard/submit', {
       method: 'POST',
@@ -1982,12 +1986,16 @@ if (localScore >= nextBossAtScore) {
 
   // keep looping
   rafRef.current = requestAnimationFrame(animate);
+}          // close else
 } catch (err) {
   console.error('Frame error:', err);
   setPaused(true);
   rafRef.current = requestAnimationFrame(animate);
 }
-};
+}; // end animate
+
+
+
 
     rafRef.current = requestAnimationFrame(animate);
 
@@ -2073,6 +2081,7 @@ const handleStart = async () => {
     setShowTitle(true);
     return;
   }
+  submitOnceRef.current = false;
   setPayHash(hash); // countdown will begin after confirmation in the effect
 };
 
@@ -2100,6 +2109,7 @@ const handleRetry = async () => {
   riskUntilRef.current   = 0;
 
   // do not flip dead/running yet. wait for on-chain confirm
+  submitOnceRef.current = false;
   setPayHash(hash);   // your wait.isSuccess effect will start the countdown
 };
 
