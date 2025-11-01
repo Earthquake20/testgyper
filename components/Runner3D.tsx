@@ -1964,19 +1964,30 @@ if (localScore >= nextBossAtScore) {
 
     if (!localDead) {
       rafRef.current = requestAnimationFrame(animate);
-    } else {
-stopMusic();
-setDead(true); setRunning(false);
-setBest(b => Math.max(b, localScore));
-setScore(localScore);
-    }
-  } catch (err) {
-    console.error('Frame error:', err);
-    setPaused(true);
-    rafRef.current = requestAnimationFrame(animate);
-  }
-};
+} else {
+  stopMusic();
+  setDead(true); setRunning(false);
+  setBest(b => Math.max(b, localScore));
+  setScore(localScore);
 
+    // submit to leaderboard (no await here)
+    const member = (address ?? 'guest').toLowerCase();
+    fetch('/api/leaderboard/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ game: 'hyperrun', member, score: localScore }),
+      cache: 'no-store',
+    }).catch(e => console.warn('submit failed', e));
+  }
+
+  // keep looping
+  rafRef.current = requestAnimationFrame(animate);
+} catch (err) {
+  console.error('Frame error:', err);
+  setPaused(true);
+  rafRef.current = requestAnimationFrame(animate);
+}
+};
 
     rafRef.current = requestAnimationFrame(animate);
 

@@ -31,6 +31,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ game, count })
     }
 
+    // get player rank & score
+if (op === 'rank') {
+  const member = (url.searchParams.get('member') || '').toLowerCase()
+  if (!member) return NextResponse.json({ error: 'bad_member' }, { status: 400 })
+  const rank = await redis.zrevrank(key, member)
+  const score = await redis.zscore(key, member)
+  return NextResponse.json({ game, member, rank, score: score ? Number(score) : 0 })
+}
+
     const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 25), 1), 100)
     const raw = await redis.zrange(key, 0, limit - 1, { withScores: true, rev: true })
     return NextResponse.json({ game, limit, rows: normalize(raw) })
