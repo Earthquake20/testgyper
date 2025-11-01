@@ -16,20 +16,11 @@ import GameClient from '@/components/GameClient';
 
 export default function Page() {
   return (
-<main
-  style={{
-    height: '100svh',
-    width: '100svw',
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden',
-    background: '#000',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }}
->
-  <GameClient />
+<main className="grid place-items-center h-[100svh] overflow-hidden p-0">
+  <div className="p-4">
+    <GameClient />
+  </div>
 </main>
+
   );
 }

@@ -508,16 +508,13 @@ useEffect(() => {
   const chainTimesRef = useRef<number[]>([]);
 
   // responsive size
-const size = useMemo(() => {
-  const vw = typeof window !== 'undefined' ? window.innerWidth  : width;
-  const vh = typeof window !== 'undefined' ? window.innerHeight : height;
-  const scale = Math.min(vw / BASE_W, vh / BASE_H);
-  return {
-    w: Math.round(BASE_W * scale),
-    h: Math.round(BASE_H * scale),
-  };
-}, [width, height]);
-
+  const size = useMemo(() => {
+    const vw = typeof window !== 'undefined' ? window.innerWidth : width;
+    const targetW = Math.min(width, vw - 24);
+    const aspect = height / width;
+    const targetH = Math.min(height, Math.floor(targetW * aspect));
+    return { w: targetW, h: targetH };
+  }, [width, height]);
 
   // theme colors
   const colors = useMemo(() => WORLD_THEMES[world], [world]);
@@ -2155,18 +2152,16 @@ const handleShare = async () => {
 <div
   ref={containerRef}
   style={{
-    position: 'absolute', // ← was fixed
+    position: 'fixed',
     inset: 0,
     overflow: 'hidden',
     display: 'grid',
     placeItems: 'center',
     padding: 0,
     margin: 0,
-    background: '#000',
+    background: '#000', // add this
   }}
 >
-
-
 
 
       <div style={{ position: 'relative' }}>
