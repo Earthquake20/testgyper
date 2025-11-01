@@ -23,10 +23,10 @@ export default function Page() {
     margin: 0,
     padding: 0,
     overflow: 'hidden',
+    background: '#000',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#000',
   }}
 >
   <GameClient />
