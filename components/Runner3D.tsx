@@ -2152,28 +2152,26 @@ const handleShare = async () => {
 <div
   ref={containerRef}
   style={{
-    position: 'fixed',
-    inset: 0,
+    position: 'relative',
+    width: '100%',
+    height: '100%',
     overflow: 'hidden',
-    display: 'grid',
-    placeItems: 'center',
-    padding: 0,
-    margin: 0,
   }}
 >
+
       <div style={{ position: 'relative' }}>
         <div
         
-          ref={mountRef}
-          style={{
-            width: size.w,
-            height: size.h,
-            borderRadius: 16,
-            border: '1px solid #222',
-            background: `linear-gradient(${colors.bgTop}, ${colors.bgBot})`,
-            overflow: 'hidden',
-            ...pausedBlur,
-          }}
+ref={mountRef}
+style={{
+  width: '100%',
+  height: '100%',
+  borderRadius: 16,
+  border: '1px solid #222',
+  background: `linear-gradient(${colors.bgTop}, ${colors.bgBot})`,
+  overflow: 'hidden',
+  ...pausedBlur,
+}}
         />
 
 {/* HUD Top Row (hidden on home menu) */}

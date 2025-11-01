@@ -76,70 +76,77 @@ html, body { overscroll-behavior: none; }
   inset: 0;
 }
 
+#game-frame > canvas { pointer-events: none; }
 
-
-/* add-mini-app overlay inside #game-frame */
-#game-frame { position: relative; overflow: hidden; }
+/* Fix Add Mini App popup inside the game frame */
+#game-frame {
+  position: relative;
+  overflow: hidden;
+}
 
 .addma-overlay {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  background: transparent;
-  pointer-events: auto;
-  z-index: 100;
+background: transparent;
+  z-index: 50;
 }
 
-
 .addma-panel {
-  width: min(92%, 360px);
-  max-width: 360px;
+  width: 90%;
+  max-width: 320px;
   background: #111218;
-  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 16px;
   padding: 18px;
   color: #fff;
-  overflow: hidden;          /* prevents inner horizontal scroll */
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
 }
 
 .addma-head {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 10px;
   margin-bottom: 12px;
 }
 
 .addma-logo {
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   background: linear-gradient(145deg,#00e0ff,#0080ff);
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   font-weight: 800;
 }
 
-.addma-title { font-size: 18px; font-weight: 700; }
+.addma-title {
+  font-size: 17px;
+  font-weight: 700;
+}
 
 .addma-note {
   background: #1a1b22;
   border-radius: 10px;
-  padding: 12px;
+  padding: 10px;
   font-size: 14px;
-  opacity: 0.95;
+  opacity: 0.9;
   margin-bottom: 16px;
 }
 
 .addma-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .addma-btn {
   flex: 1;
-  height: 44px;
+  height: 42px;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .addma-cancel {
@@ -152,5 +159,4 @@ html, body { overscroll-behavior: none; }
   background: linear-gradient(90deg,#6b4dff,#8a6bff);
   color: #fff;
   border: none;
-  font-weight: 700;
 }

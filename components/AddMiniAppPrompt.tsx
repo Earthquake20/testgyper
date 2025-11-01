@@ -44,9 +44,15 @@ if (!ignore && (force || !added)) setOpen(true);
 
   if (!open) return null;
 
-  return (
-    <div className="addma-overlay" aria-modal="true" role="dialog">
-      <div className="addma-panel">
+return (
+  <div
+    className="addma-overlay"
+    data-game-layer
+    aria-modal="true"
+    role="dialog"
+    style={{ position: 'absolute', inset: 0, zIndex: 100, overflow: 'hidden' }}
+  >
+    <div className="addma-panel" style={{ maxHeight: '84%', overflow: 'hidden' }}>
         <div className="addma-head">
           <div className="addma-logo">HR</div>
           <div className="addma-title">Add Mini App. Hyper Run</div>
