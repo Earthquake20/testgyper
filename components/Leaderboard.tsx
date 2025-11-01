@@ -218,14 +218,17 @@ const tbody: React.CSSProperties = {
 };
 
 const tr: React.CSSProperties = {
-  display: 'flex',
+  display: 'grid',
+  gridTemplateColumns: '48px 1fr 80px', // rank | player | score
   alignItems: 'center',
-  gap: 10,
+  gap: 8,
   padding: '10px 12px',
-  borderRadius: 12,
-  background: 'rgba(18,18,26,0.55)',
-  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 10,
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.06)',
+  minWidth: 0 // allow shrink, prevents horizontal overflow
 };
+
 
 const trMe: React.CSSProperties = {
   background:
@@ -234,25 +237,21 @@ const trMe: React.CSSProperties = {
   boxShadow: '0 0 20px rgba(255,102,217,0.25)',
 };
 
-const rank: React.CSSProperties = {
-  width: 56,
-  fontWeight: 900,
-};
+const rank: React.CSSProperties = { width: 48, textAlign: 'center', opacity: 0.8 };
 
 const who: React.CSSProperties = {
-  flex: 1,
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  opacity: 0.95,
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
-  fontWeight: 800,
+  gap: 8
 };
 
-const score: React.CSSProperties = {
-  width: 110,
-  textAlign: 'right',
-  fontWeight: 900,
-  letterSpacing: 0.3,
-};
+
+const score: React.CSSProperties = { width: 80, textAlign: 'right', fontWeight: 700 };
 
 const meTag: React.CSSProperties = {
   padding: '2px 6px',
