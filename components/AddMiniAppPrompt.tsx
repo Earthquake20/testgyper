@@ -1,4 +1,3 @@
-// components/AddMiniAppPrompt.tsx
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -12,14 +11,15 @@ export default function AddMiniAppPrompt() {
 
   useEffect(() => {
     let ignore = false;
-    async function init() {
+    (async () => {
       try {
         const inMini = (await sdk.isInMiniApp()) === true;
         const added = localStorage.getItem(LS_KEY) === 'yes';
         if (!ignore && inMini && !added) setOpen(true);
-      } catch {}
-    }
-    init();
+      } catch {
+        /* no-op */
+      }
+    })();
     return () => {
       ignore = true;
     };
@@ -31,7 +31,9 @@ export default function AddMiniAppPrompt() {
       await sdk.actions.addMiniApp();
       localStorage.setItem(LS_KEY, 'yes');
       setOpen(false);
-    } catch {} finally {
+    } catch {
+      // no flag so it can show next launch
+    } finally {
       setBusy(false);
     }
   }, []);
@@ -42,77 +44,19 @@ export default function AddMiniAppPrompt() {
 
   if (!open) return null;
 
-return (
-  <div
-      aria-modal="true"
-      role="dialog"
-      className="addma-overlay"
-    >
-
-<div className="addma-panel">
-
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: 'linear-gradient(145deg,#00e0ff,#0080ff)',
-              display: 'grid',
-              placeItems: 'center',
-              fontWeight: 800,
-            }}
-          >
-            HR
-          </div>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>Add Mini App. Hyper Run</div>
+  return (
+    <div className="addma-overlay" aria-modal="true" role="dialog">
+      <div className="addma-panel">
+        <div className="addma-head">
+          <div className="addma-logo">HR</div>
+          <div className="addma-title">Add Mini App. Hyper Run</div>
         </div>
 
-        <div
-          style={{
-            background: '#1a1b22',
-            borderRadius: 10,
-            padding: 12,
-            fontSize: 14,
-            opacity: 0.9,
-            marginBottom: 16,
-          }}
-        >
-          Add to Farcaster for quick access and notifications
-        </div>
+        <div className="addma-note">Add to Farcaster for quick access and notifications</div>
 
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'space-between' }}>
-          <button
-            onClick={handleCancel}
-            disabled={busy}
-            style={{
-              flex: 1,
-              height: 44,
-              borderRadius: 10,
-              background: '#262833',
-              color: 'white',
-              border: '1px solid rgba(255,255,255,0.06)',
-              cursor: 'pointer',
-            }}
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={handleConfirm}
-            disabled={busy}
-            style={{
-              flex: 1,
-              height: 44,
-              borderRadius: 10,
-              background: 'linear-gradient(90deg,#6b4dff,#8a6bff)',
-              color: 'white',
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-              opacity: busy ? 0.8 : 1,
-            }}
-          >
+        <div className="addma-actions">
+          <button className="addma-btn addma-cancel" onClick={handleCancel} disabled={busy}>Cancel</button>
+          <button className="addma-btn addma-ok" onClick={handleConfirm} disabled={busy}>
             {busy ? 'Working…' : 'Confirm'}
           </button>
         </div>

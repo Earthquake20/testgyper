@@ -75,29 +75,81 @@ html, body { overscroll-behavior: none; }
   position: absolute;
   inset: 0;
 }
-/* --- Add Mini App popup inside game frame --- */
+
+
+
+/* add-mini-app overlay inside #game-frame */
 #game-frame { position: relative; overflow: hidden; }
 
-
-/* add-mini-app overlay styles */
 .addma-overlay {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  background: transparent;
+  background: rgba(0,0,0,0.0); /* no glass outside */
   pointer-events: auto;
-  z-index: 60; /* above HUD */
+  z-index: 60;
 }
 
 .addma-panel {
   width: min(92%, 360px);
-  max-height: 70%;
+  max-width: 360px;
   background: #111218;
-  border-radius: 16px;
-  padding: 20px;
-  color: #fff;
   border: 1px solid rgba(255,255,255,0.12);
-  overflow: hidden;
-  box-shadow: none;
+  border-radius: 16px;
+  padding: 18px;
+  color: #fff;
+  overflow: hidden;          /* prevents inner horizontal scroll */
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+}
+
+.addma-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.addma-logo {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#00e0ff,#0080ff);
+  display: grid; place-items: center;
+  font-weight: 800;
+}
+
+.addma-title { font-size: 18px; font-weight: 700; }
+
+.addma-note {
+  background: #1a1b22;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  opacity: 0.95;
+  margin-bottom: 16px;
+}
+
+.addma-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.addma-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.addma-cancel {
+  background: #262833;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.addma-ok {
+  background: linear-gradient(90deg,#6b4dff,#8a6bff);
+  color: #fff;
+  border: none;
+  font-weight: 700;
 }
