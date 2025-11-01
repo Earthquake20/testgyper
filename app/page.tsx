@@ -16,8 +16,20 @@ import GameClient from '@/components/GameClient';
 
 export default function Page() {
   return (
-    <main style={{ minHeight: '100svh', display: 'grid', placeItems: 'center', padding: 16 }}>
-      <GameClient />
-    </main>
+<main
+  style={{
+    height: '100svh',
+    width: '100vw',
+    margin: 0,
+    padding: 0,
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#000',
+  }}
+>
+  <GameClient />
+</main>
   );
 }

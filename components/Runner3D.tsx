@@ -508,13 +508,16 @@ useEffect(() => {
   const chainTimesRef = useRef<number[]>([]);
 
   // responsive size
-  const size = useMemo(() => {
-    const vw = typeof window !== 'undefined' ? window.innerWidth : width;
-    const targetW = Math.min(width, vw - 24);
-    const aspect = height / width;
-    const targetH = Math.min(height, Math.floor(targetW * aspect));
-    return { w: targetW, h: targetH };
-  }, [width, height]);
+const size = useMemo(() => {
+  const vw = typeof window !== 'undefined' ? window.innerWidth  : width;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : height;
+  const scale = Math.min(vw / BASE_W, vh / BASE_H);
+  return {
+    w: Math.round(BASE_W * scale),
+    h: Math.round(BASE_H * scale),
+  };
+}, [width, height]);
+
 
   // theme colors
   const colors = useMemo(() => WORLD_THEMES[world], [world]);
