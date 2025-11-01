@@ -75,3 +75,29 @@ html, body { overscroll-behavior: none; }
   position: absolute;
   inset: 0;
 }
+/* --- Add Mini App popup inside game frame --- */
+#game-frame { position: relative; overflow: hidden; }
+
+
+/* add-mini-app overlay styles */
+.addma-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  pointer-events: auto;
+  z-index: 60; /* above HUD */
+}
+
+.addma-panel {
+  width: min(92%, 360px);
+  max-height: 70%;
+  background: #111218;
+  border-radius: 16px;
+  padding: 20px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  overflow: hidden;
+  box-shadow: none;
+}

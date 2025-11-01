@@ -42,31 +42,15 @@ export default function AddMiniAppPrompt() {
 
   if (!open) return null;
 
-  return (
-    <div
+return (
+  <div
       aria-modal="true"
       role="dialog"
-style={{
-  position: 'absolute',
-  inset: 0,
-  background: 'rgba(0,0,0,0.6)',
-  display: 'grid',
-  placeItems: 'center',
-  zIndex: 30,
-}}
+      className="addma-overlay"
     >
-      <div
-        style={{
-          width: 360,
-          maxWidth: '92%',
-          background: '#111218',
-          borderRadius: 16,
-          padding: 20,
-          color: 'white',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
+
+<div className="addma-panel">
+
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
           <div
             style={{
