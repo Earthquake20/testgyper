@@ -8,8 +8,9 @@ type Row = { member: string; score: number };
 function shortAddr(a: string) {
   if (!a) return 'player';
   const s = a.toLowerCase();
-  return s.length > 12 ? `${s.slice(0, 6)}…${s.slice(-4)}` : s;
+  return s.length > 6 ? `${s.slice(0, 6)}…` : s;
 }
+
 
 function num(n: number) {
   return new Intl.NumberFormat().format(n);
