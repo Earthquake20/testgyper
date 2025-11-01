@@ -2701,26 +2701,56 @@ const short = (a?: string) =>
     <IdBadge />
           </div>
         </div>
-        {showOnlineLB && (
-  <div style={drawerOverlay} onClick={() => setShowOnlineLB(false)}>
-    <div style={drawer} onClick={e => e.stopPropagation()}>
-      <h3 style={{ marginTop: 0, marginBottom: 10 }}>Leaderboard</h3>
+{showOnlineLB && (
+  <div
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'rgba(0,0,0,0.6)',
+      backdropFilter: 'blur(6px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 50,
+    }}
+    onClick={() => setShowOnlineLB(false)}
+  >
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        width: '85%',
+        maxWidth: 420,
+        background: 'rgba(10,10,20,0.9)',
+        border: '1px solid rgba(255,255,255,0.15)',
+        borderRadius: 20,
+        boxShadow: '0 0 40px rgba(255,100,255,0.2)',
+        padding: 20,
+        color: '#fff',
+        textAlign: 'center',
+      }}
+    >
+      <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10, color: '#ff73e1' }}>
+        Leaderboard
+      </h3>
       <Leaderboard />
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-        <button
-          onClick={() => setShowOnlineLB(false)}
-          style={{
-            padding: '8px 16px',
-            borderRadius: 10,
-            background: '#222',
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.15)',
-            cursor: 'pointer',
-          }}
-        >
-          Close
-        </button>
-      </div>
+      <button
+        onClick={() => setShowOnlineLB(false)}
+        style={{
+          marginTop: 20,
+          padding: '10px 20px',
+          borderRadius: 12,
+          background: 'linear-gradient(90deg,#ff73e1,#b13cff)',
+          border: 'none',
+          color: '#fff',
+          fontWeight: 700,
+          cursor: 'pointer',
+        }}
+      >
+        Close
+      </button>
     </div>
   </div>
 )}
