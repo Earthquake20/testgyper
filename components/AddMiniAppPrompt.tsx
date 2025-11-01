@@ -12,15 +12,12 @@ export default function AddMiniAppPrompt() {
 
   useEffect(() => {
     let ignore = false;
-
     async function init() {
       try {
         const inMini = (await sdk.isInMiniApp()) === true;
         const added = localStorage.getItem(LS_KEY) === 'yes';
         if (!ignore && inMini && !added) setOpen(true);
-      } catch {
-        /* no-op */
-      }
+      } catch {}
     }
     init();
     return () => {
@@ -32,19 +29,14 @@ export default function AddMiniAppPrompt() {
     try {
       setBusy(true);
       await sdk.actions.addMiniApp();
-      // mark as added only after confirm flow
       localStorage.setItem(LS_KEY, 'yes');
       setOpen(false);
-    } catch {
-      // user dismissed native prompt or host error
-      // do not set flag so it will show next launch
-    } finally {
+    } catch {} finally {
       setBusy(false);
     }
   }, []);
 
   const handleCancel = useCallback(() => {
-    // just close for now, no flag, so it will appear next launch
     setOpen(false);
   }, []);
 
@@ -55,20 +47,18 @@ export default function AddMiniAppPrompt() {
       aria-modal="true"
       role="dialog"
 style={{
-  position: 'absolute',      // was fixed
-  inset: 0,                  // fill only the game frame
+  position: 'absolute',
+  inset: 0,
   background: 'rgba(0,0,0,0.6)',
   display: 'grid',
   placeItems: 'center',
-  zIndex: 40,                // high inside frame, not global
-  borderRadius: 16,          // match frame rounding if any
+  zIndex: 30,
 }}
-
     >
       <div
         style={{
           width: 360,
-          maxWidth: '92vw',
+          maxWidth: '92%',
           background: '#111218',
           borderRadius: 16,
           padding: 20,

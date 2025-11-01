@@ -58,7 +58,20 @@ html, body { overscroll-behavior: none; }
   touch-action: none;
   -ms-touch-action: none;
 }
-
-
 }
+}
+#screen-game, #game-mount { position: relative; overflow: hidden; }
+
+#game-frame {
+  position: relative;
+  width: min(420px, 100%);
+  aspect-ratio: 9 / 16;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#game-frame > canvas,
+#game-frame [data-game-layer] {
+  position: absolute;
+  inset: 0;
 }

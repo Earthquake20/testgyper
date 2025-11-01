@@ -127,7 +127,8 @@ export default function GameClient() {
   }, [handleTick]);
 
 return (
-  <div className="relative w-full h-full min-h-[calc(100vh-64px)]">
+  <div id="game-frame" style={{ position: 'relative', width: 'min(420px, 100%)', aspectRatio: '9 / 16', margin: '0 auto', overflow: 'hidden' }}>
+
         {/* background video */}
     <div className="absolute inset-0 -z-10 overflow-hidden">
       <video
