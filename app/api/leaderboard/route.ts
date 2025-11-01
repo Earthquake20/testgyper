@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Redis } from '@upstash/redis'
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const redis = Redis.fromEnv()
 
@@ -17,40 +19,44 @@ function normalize(raw: any): { member: string; score: number }[] {
 }
 
 export async function GET(req: Request) {
-  const url = new URL(req.url)
-  const game = url.searchParams.get('game') || ''
-  const op = url.searchParams.get('op') || 'top'
-  if (!game) return NextResponse.json({ error: 'bad_query' }, { status: 400 })
-  const key = `lb:${game}`
+  try {
+    const url = new URL(req.url)
+    const game = url.searchParams.get('game') || ''
+    const op = url.searchParams.get('op') || 'top'
+    if (!game) return NextResponse.json({ error: 'bad_query' }, { status: 400 })
+    const key = `lb:${game}`
 
-  if (op === 'count') {
-    const count = await redis.zcard(key)
-    return NextResponse.json({ game, count })
+    if (op === 'count') {
+      const count = await redis.zcard(key)
+      return NextResponse.json({ game, count })
+    }
+
+    const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 25), 1), 100)
+    const raw = await redis.zrange(key, 0, limit - 1, { withScores: true, rev: true })
+    return NextResponse.json({ game, limit, rows: normalize(raw) })
+  } catch (err: any) {
+    console.error('LB_GET_ERROR', err)
+    return NextResponse.json({ error: 'lb_get_failed', detail: String(err?.message || err) }, { status: 500 })
   }
-
-  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 25), 1), 100)
-
-  // newer SDK → use zrange with reverse: true
-  const raw = await redis.zrange(key, 0, limit - 1, {
-    withScores: true,
-    rev: true,
-  })
-
-  return NextResponse.json({ game, limit, rows: normalize(raw) })
 }
 
 export async function POST(req: Request) {
-  let body: any
-  try { body = await req.json() } catch { return NextResponse.json({ error: 'bad_json' }, { status: 400 }) }
-  const { game, member, score } = body || {}
-  if (!game || !member || typeof score !== 'number') {
-    return NextResponse.json({ error: 'bad_body' }, { status: 400 })
+  try {
+    let body: any
+    try { body = await req.json() } catch { return NextResponse.json({ error: 'bad_json' }, { status: 400 }) }
+    const { game, member, score } = body || {}
+    if (!game || !member || typeof score !== 'number') {
+      return NextResponse.json({ error: 'bad_body' }, { status: 400 })
+    }
+    const key = `lb:${game}`
+    const prev = await redis.zscore(key, member)
+    const next = prev != null ? Math.max(Number(prev), score) : score
+    if (prev == null || next !== Number(prev)) {
+      await redis.zadd(key, { score: next, member })
+    }
+    return NextResponse.json({ ok: true, game, member, score: next })
+  } catch (err: any) {
+    console.error('LB_POST_ERROR', err)
+    return NextResponse.json({ error: 'lb_post_failed', detail: String(err?.message || err) }, { status: 500 })
   }
-  const key = `lb:${game}`
-  const prev = await redis.zscore(key, member)
-  const next = prev != null ? Math.max(Number(prev), score) : score
-  if (prev == null || next !== Number(prev)) {
-    await redis.zadd(key, { score: next, member })
-  }
-  return NextResponse.json({ ok: true, game, member, score: next })
 }
