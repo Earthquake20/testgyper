@@ -13,9 +13,9 @@ export default function AddMiniAppPrompt() {
     let ignore = false;
     (async () => {
       try {
-        const inMini = (await sdk.isInMiniApp()) === true;
-        const added = localStorage.getItem(LS_KEY) === 'yes';
-        if (!ignore && inMini && !added) setOpen(true);
+const added = localStorage.getItem(LS_KEY) === 'yes';
+const force = new URLSearchParams(location.search).has('addma');
+if (!ignore && (force || !added)) setOpen(true);
       } catch {
         /* no-op */
       }

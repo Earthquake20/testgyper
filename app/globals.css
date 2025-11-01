@@ -86,10 +86,11 @@ html, body { overscroll-behavior: none; }
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(0,0,0,0.0); /* no glass outside */
+  background: transparent;
   pointer-events: auto;
-  z-index: 60;
+  z-index: 100;
 }
+
 
 .addma-panel {
   width: min(92%, 360px);
